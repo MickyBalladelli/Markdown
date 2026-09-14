@@ -1,3 +1,5 @@
+<a href="Ghost2.png"><img src="Ghost2.png" alt="Ghost Markdown icon" width="160"></a>
+
 # Ghost Markdown
 
 [![Version](https://img.shields.io/github/package-json/v/MickyBalladelli/Markdown?style=flat-square&logo=visualstudiocode&logoColor=white)](https://github.com/MickyBalladelli/Markdown)
