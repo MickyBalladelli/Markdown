@@ -29,9 +29,12 @@ To bump the extension version and keep `package-lock.json` in sync:
 npm run bump-version
 npm run bump-version -- patch
 npm run bump-version -- 1.2.3
+npm run build-install-vsix
 ```
 
 No argument makes a feature (`minor`) version bump.
+
+Build and install the current VSIX with `npm run build-install-vsix`.
 
 Press `F5` in VS Code to launch an Extension Development Host and open a Markdown file.
 
