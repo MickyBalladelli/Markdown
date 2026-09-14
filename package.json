@@ -3,6 +3,7 @@
   "displayName": "Ghost Markdown",
   "description": "A focused Markdown viewer and editor for VS Code.",
   "author": "Micky Balladelli",
+  "icon": "Ghost2.png",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.137.0"
@@ -45,6 +46,7 @@
     "watch": "npm-run-all -p watch:*",
     "watch:esbuild": "node esbuild.js --watch",
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "bump-version": "node scripts/bump-version.js",
     "package": "npm run check-types && npm run lint && node esbuild.js --production",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",

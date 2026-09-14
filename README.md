@@ -18,6 +18,13 @@ npm install
 npm run compile
 ```
 
+To bump the extension version and keep `package-lock.json` in sync:
+
+```bash
+npm run bump-version -- patch
+npm run bump-version -- 1.2.3
+```
+
 Press `F5` in VS Code to launch an Extension Development Host and open a Markdown file.
 
 ## Release Notes
