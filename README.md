@@ -39,9 +39,3 @@ No argument makes a feature (`minor`) version bump.
 Build and install the current VSIX with `npm run build-install-vsix`.
 
 Press `F5` in VS Code to launch an Extension Development Host and open a Markdown file.
-
-## Release Notes
-
-### 0.0.1
-
-Initial release of Ghost Markdown.
