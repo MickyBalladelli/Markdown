@@ -12,7 +12,7 @@
   },
   "icon": "Ghost2.png",
   "license": "MIT",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "engines": {
     "vscode": "^1.137.0"
   },
@@ -29,6 +29,21 @@
       {
         "command": "ghostMarkdown.open",
         "title": "Open Markdown with Ghost Markdown"
+      }
+    ],
+    "customEditors": [
+      {
+        "viewType": "ghostMarkdown.editor",
+        "displayName": "Markdown Preview",
+        "selector": [
+          {
+            "filenamePattern": "*.md"
+          },
+          {
+            "filenamePattern": "*.markdown"
+          }
+        ],
+        "priority": "default"
       }
     ]
   },
