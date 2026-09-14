@@ -21,26 +21,10 @@
     "Visualization"
   ],
   "activationEvents": [
-    "onCustomEditor:ghostMarkdown.editor",
     "onCommand:ghostMarkdown.open"
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "customEditors": [
-      {
-        "viewType": "ghostMarkdown.editor",
-        "displayName": "Ghost Markdown",
-        "selector": [
-          {
-            "filenamePattern": "*.md"
-          },
-          {
-            "filenamePattern": "*.markdown"
-          }
-        ],
-        "priority": "default"
-      }
-    ],
     "commands": [
       {
         "command": "ghostMarkdown.open",
