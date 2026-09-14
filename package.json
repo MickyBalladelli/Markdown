@@ -3,14 +3,16 @@
   "displayName": "Ghost Markdown",
   "description": "A focused Markdown viewer and editor for VS Code.",
   "publisher": "MickyBalladelli",
-  "author": "Micky Balladelli",
+  "author": {
+    "name": "Micky Balladelli"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/MickyBalladelli/Markdown.git"
   },
   "icon": "Ghost2.png",
   "license": "MIT",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "engines": {
     "vscode": "^1.137.0"
   },
