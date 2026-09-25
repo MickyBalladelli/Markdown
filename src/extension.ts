@@ -1,54 +1,48 @@
 import * as vscode from 'vscode';
 import MarkdownIt from 'markdown-it';
 
-const viewType = 'ghostMarkdown.editor';
+const viewType = 'ghostMarkdown.preview';
 const markdown = new MarkdownIt({ html: false, linkify: true, breaks: true });
 
-class GhostMarkdownEditorProvider implements vscode.CustomTextEditorProvider {
-	public resolveCustomTextEditor(document: vscode.TextDocument, panel: vscode.WebviewPanel): void {
-		panel.webview.options = { enableScripts: true };
-		panel.webview.html = this.getHtml(panel.webview, document);
-		const update = () => panel.webview.postMessage({ type: 'document', text: document.getText(), html: markdown.render(document.getText()) });
-		const documentSubscription = vscode.workspace.onDidChangeTextDocument(event => {
-			if (event.document.uri.toString() === document.uri.toString()) {
-				update();
-			}
-		});
-		const messageSubscription = panel.webview.onDidReceiveMessage(async message => {
-			if (message.type !== 'update' || typeof message.text !== 'string') {
-				return;
-			}
-			const edit = new vscode.WorkspaceEdit();
-			edit.replace(document.uri, new vscode.Range(0, 0, document.lineCount, 0), message.text);
-			await vscode.workspace.applyEdit(edit);
-		});
-		panel.onDidDispose(() => {
-			documentSubscription.dispose();
-			messageSubscription.dispose();
-		});
-	}
-
-	private getHtml(webview: vscode.Webview, document: vscode.TextDocument): string {
-		const nonce = getNonce();
-		const initialText = JSON.stringify(document.getText()).replace(/</g, '\\u003c');
-		const initialHtml = JSON.stringify(markdown.render(document.getText())).replace(/</g, '\\u003c');
-		return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';"><style>${styles}</style></head><body>
+function getHtml(webview: vscode.Webview, document: vscode.TextDocument): string {
+	const nonce = getNonce();
+	const initialText = JSON.stringify(document.getText()).replace(/</g, '\\u003c');
+	const initialHtml = JSON.stringify(markdown.render(document.getText())).replace(/</g, '\\u003c');
+	return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';"><style>${styles}</style></head><body>
 		<header><div class="brand"><span class="mark">G</span><span>Ghost Markdown</span></div><span class="status" id="status">Live preview</span></header>
 		<main><section class="editor-pane"><label for="source">Markdown</label><textarea id="source" spellcheck="false" aria-label="Markdown source"></textarea></section><section class="preview-pane"><label>Preview</label><article id="preview"></article></section></main>
 		<script nonce="${nonce}">const vscode=acquireVsCodeApi();const source=document.getElementById('source');const preview=document.getElementById('preview');const status=document.getElementById('status');let timer;source.value=${initialText};preview.innerHTML=${initialHtml};source.addEventListener('input',()=>{status.textContent='Saving...';clearTimeout(timer);timer=setTimeout(()=>vscode.postMessage({type:'update',text:source.value}),180)});window.addEventListener('message',event=>{if(event.data.type!=='document')return;if(event.data.text!==source.value)source.value=event.data.text;preview.innerHTML=event.data.html;status.textContent='Saved'});</script></body></html>`;
-	}
 }
 
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
-		vscode.window.registerCustomEditorProvider(viewType, new GhostMarkdownEditorProvider(), { webviewOptions: { retainContextWhenHidden: true } }),
 		vscode.commands.registerCommand('ghostMarkdown.open', async () => {
 			const editor = vscode.window.activeTextEditor;
 			if (!editor || !/\.(md|markdown)$/i.test(editor.document.fileName)) {
 				vscode.window.showWarningMessage('Open a Markdown file first.');
 				return;
 			}
-			await vscode.commands.executeCommand('vscode.openWith', editor.document.uri, viewType);
+			const document = editor.document;
+			const panel = vscode.window.createWebviewPanel(viewType, 'Markdown Preview', vscode.ViewColumn.Beside, { enableScripts: true, retainContextWhenHidden: true });
+			panel.webview.html = getHtml(panel.webview, document);
+			const update = () => panel.webview.postMessage({ type: 'document', text: document.getText(), html: markdown.render(document.getText()) });
+			const documentSubscription = vscode.workspace.onDidChangeTextDocument(event => {
+				if (event.document.uri.toString() === document.uri.toString()) {
+					update();
+				}
+			});
+			const messageSubscription = panel.webview.onDidReceiveMessage(async message => {
+				if (message.type !== 'update' || typeof message.text !== 'string') {
+					return;
+				}
+				const edit = new vscode.WorkspaceEdit();
+				edit.replace(document.uri, new vscode.Range(0, 0, document.lineCount, 0), message.text);
+				await vscode.workspace.applyEdit(edit);
+			});
+			panel.onDidDispose(() => {
+				documentSubscription.dispose();
+				messageSubscription.dispose();
+			});
 		}),
 	);
 }
