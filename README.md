@@ -1,4 +1,3 @@
-<a href="Ghost2.png"><img src="Ghost2.png" alt="Ghost Markdown icon" width="160"></a>
 
 # Ghost Markdown
 
